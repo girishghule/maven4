@@ -1,0 +1,43 @@
+pipeline
+{
+    agent any
+    stages
+    {
+        stage('ContinuousDownload'){
+            
+        
+        steps
+        {
+             git 'https://github.com/girishghule/maven2.git'
+        }
+       }
+        stage('ContinuousBuild')
+        {
+            steps
+            {
+               sh 'mvn package'
+            }
+        }
+        stage('ContinuousDeploy')
+        {
+            steps
+            {
+             deploy adapters: [tomcat9(credentialsId: '75e1e0de-9d54-4237-91aa-1a9991d076b6', path: '', url: 'http://172.31.38.167:8080')], contextPath: 'testapp4', war: '**/*.war'
+            }
+        }
+        stage('ContinousTesting')
+        {
+            steps
+            {
+             git 'https://github.com/girishghule/FunctionalTesting.git'
+            }
+        }
+            stage('ContinousDelivery')
+        {
+            steps
+            {
+             deploy adapters: [tomcat9(credentialsId: 'e7dad97a-dae5-4bde-8819-b8870b5b60d6', path: '', url: 'http://172.31.42.149:8080')], contextPath: 'prodapp4', war: '**/*.war'
+            }
+        }
+    }
+}
